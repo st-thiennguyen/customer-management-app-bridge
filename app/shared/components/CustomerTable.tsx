@@ -42,7 +42,9 @@ const CustomerTable = ({ edges }: CustomerTableProps) => {
       email: item.node.email,
       addresses: item.node.addresses.address1,
       isDeactive: item.node.metafields.edges[0]?.node.value,
-      metafieldId: item.node.metafields.edges[0]?.node.id,
+      metafieldDeactivateId: item.node.metafields.edges[0]?.node.id,
+      metafieldEmailId: item.node.metafields.edges[1]?.node.id,
+      emailStored: item.node.metafields.edges[1]?.node.value,
       renderStatus: (
         <Badge
           tone={
@@ -69,7 +71,9 @@ const CustomerTable = ({ edges }: CustomerTableProps) => {
         addresses,
         renderStatus,
         isDeactive,
-        metafieldId,
+        metafieldDeactivateId,
+        metafieldEmailId,
+        emailStored,
       },
       index
     ) => (
@@ -79,11 +83,7 @@ const CustomerTable = ({ edges }: CustomerTableProps) => {
             {first_name + last_name}
           </Text>
         </IndexTable.Cell>
-        <IndexTable.Cell>
-          {isDeactive === "true"
-            ? Array.from({ length: email.length }).map((item) => "*")
-            : email}
-        </IndexTable.Cell>
+        <IndexTable.Cell>{email}</IndexTable.Cell>
         <IndexTable.Cell>{addresses}</IndexTable.Cell>
         <IndexTable.Cell>{renderStatus}</IndexTable.Cell>
         <IndexTable.Cell>
@@ -94,7 +94,16 @@ const CustomerTable = ({ edges }: CustomerTableProps) => {
               const formData = new FormData();
               formData.append("customerId", id);
               formData.append("isDeactive", String(isDeactive));
-              formData.append("metafieldId", metafieldId ?? undefined);
+              formData.append(
+                "metafieldDeactivateId",
+                metafieldDeactivateId ?? undefined
+              );
+              formData.append(
+                "metafieldEmailId",
+                metafieldEmailId ?? undefined
+              );
+              formData.append("email", email);
+              formData.append("emailStored", emailStored);
               submit(formData, { method: "POST" });
             }}
           >

@@ -2,7 +2,7 @@
 
 name = "customer-management"
 client_id = "6c78fc1e472898df7f47647212bb5e78"
-application_url = "https://bowling-displays-gardening-cameron.trycloudflare.com"
+application_url = "https://opposition-unique-hence-wildlife.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products, read_customers, write_customers"
 
 [auth]
 redirect_urls = [
-  "https://bowling-displays-gardening-cameron.trycloudflare.com/auth/callback",
-  "https://bowling-displays-gardening-cameron.trycloudflare.com/auth/shopify/callback",
-  "https://bowling-displays-gardening-cameron.trycloudflare.com/api/auth/callback"
+  "https://opposition-unique-hence-wildlife.trycloudflare.com/auth/callback",
+  "https://opposition-unique-hence-wildlife.trycloudflare.com/auth/shopify/callback",
+  "https://opposition-unique-hence-wildlife.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

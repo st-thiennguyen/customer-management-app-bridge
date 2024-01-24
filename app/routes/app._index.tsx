@@ -3,6 +3,7 @@ import { Page } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import CustomerTable from "../shared/components/CustomerTable";
 import { useActionData, useLoaderData } from "@remix-run/react";
+import { generateRandomEmail } from "~/shared/utils/emailGenerate";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
@@ -42,14 +43,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const customerId = formData.get("customerId");
   const isDeactive = formData.get("isDeactive");
-  const metafieldId = formData.get("metafieldId");
+  const metafieldDeactivateId = formData.get("metafieldDeactivateId");
+  const metafieldEmailId = formData.get("metafieldEmailId");
+  const email = formData.get("email");
+  const emailStored = formData.get("emailStored");
 
+  console.log("CHECK", emailStored, isDeactive, metafieldDeactivateId);
   const response = await admin.graphql(
     `#graphql
           mutation updateCustomerMetafields($input: CustomerInput!) {
               customerUpdate(input: $input) {
                 customer {
                   id
+                  email
                   metafields(first: 3) {
                     edges {
                       node {
@@ -71,18 +77,31 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       variables: {
         input: {
           metafields: [
-            metafieldId !== "undefined"
+            metafieldDeactivateId === "undefined"
               ? {
-                  id: metafieldId,
-                  value: isDeactive === "true" ? "false" : "true",
-                }
-              : {
                   namespace: "st-deactivate",
                   key: "isDeactivate",
                   type: "boolean",
                   value: "true",
+                }
+              : {
+                  id: metafieldDeactivateId,
+                  value: isDeactive === "true" ? "false" : "true",
                 },
+            metafieldEmailId === "undefined"
+              ? {
+                  namespace: "st-user-email",
+                  key: "userEmail",
+                  type: "single_line_text_field",
+                  value: email,
+                }
+              : null,
           ],
+          email: checkEmail(
+            isDeactive === "true",
+            String(emailStored),
+            String(email)
+          ),
           id: customerId,
         },
       },
@@ -90,6 +109,36 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   );
 
   return null;
+};
+
+const checkEmail = (
+  isDeactivate: boolean,
+  emailStored: string,
+  resultDefault: string
+) => {
+  console.log(
+    "CHECK2 : ",
+    "\n",
+    emailStored,
+    "type :",
+    typeof emailStored,
+    "\n",
+    isDeactivate,
+    "type :",
+    typeof isDeactivate,
+    "\n",
+    resultDefault
+  );
+
+  if (emailStored !== "undefined") {
+    if (isDeactivate) {
+      return emailStored;
+    } else {
+      return generateRandomEmail(String(emailStored));
+    }
+  } else {
+    return generateRandomEmail(resultDefault);
+  }
 };
 
 export default function Index() {
